@@ -6,9 +6,9 @@
   Password: vagrant
 
 2. Run the virtual machine. To run the virtual machine execute this line in bash:
-```bash
-$ vagrant up
-```
+  ```bash
+  $ vagrant up
+  ```
 
 3. Install VM VirtualBox. https://www.virtualbox.org/wiki/Downloads
 
