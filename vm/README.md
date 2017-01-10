@@ -25,3 +25,5 @@ Login as: vagrant
 6. Get the vm's IP with the command ifconfig.
 
 6. Connect to the vm with WINSCP using STFP as protocol, use the vm's IP, 22 as port and "vagrant" as username and password.
+
+7. ENJOY!
