@@ -2,7 +2,7 @@
 
 1. Install Vagrant. https://www.vagrantup.com/docs/installation/
 
-Username: vagrant
+Username: vagrant<br>
 Password: vagrant
 
 2. Run the virtual machine. To run the virtual machine execute this line in bash:
