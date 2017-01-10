@@ -29,3 +29,12 @@
 7. Connect to the vm with WINSCP using STFP as protocol, use the vm's IP, 22 as port and "vagrant" as username and password.
 
 8. ENJOY!
+
+If Go isn't recognized: 
+```bash
+  export GOROOT=/usr/local/go
+  export PATH=$PATH:$GOROOT/bin
+  cd ~
+  cd goWorkspace
+  export GOPATH=$PWD
+  ```
