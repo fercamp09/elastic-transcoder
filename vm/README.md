@@ -38,3 +38,13 @@ If Go isn't recognized:
   cd goWorkspace
   export GOPATH=$PWD
   ```
+
+To download files from github.com without downloading the whole project:
+```bash
+  curl -L -O https://raw.githubusercontent.com/user/repository/branch/filename
+```
+**Example:** from https://github.com/rabbitmq/rabbitmq-tutorials/blob/master/go/receive.go:
+```bash
+  curl -L -O https://raw.githubusercontent.com/rabbitmq/rabbitmq-tutorials/master/go/receive.go
+```
+
