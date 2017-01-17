@@ -1,0 +1,39 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package tasks;
+// [END declaration]
+
+// [START java_declaration]
+option java_package = "com.github.fercamp09.tasks";
+option java_outer_classname = "TasksProtos";
+// [END java_declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Fercamp09.Github.Tasks";
+// [END csharp_declaration]
+
+// [START messages]
+message Task {
+  string filename = 1;
+  string new_name = 2; 
+  string format = 3;
+  int32 priority = 4;
+
+  enum PriorityType {
+    LOW = 0;
+    HIGH = 1;
+  }
+}
+
+message Response {
+  string file_location = 1;
+}
+// [END messages]

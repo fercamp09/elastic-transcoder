@@ -4,11 +4,11 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/streadway/amqp"
+	"github.com/golang/protobuf/proto"	
+	pb "github.com/fercamp09/elastic-transcoder/tasks"
 )
 
 
@@ -30,7 +30,7 @@ func randInt(min int, max int) int {
 	return min + rand.Intn(max-min)
 }
 
-func fibonacciRPC(n int) (res int, err error) {
+func imageRPC(i string, o string, p int) (resp *pb.Response, err error) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -64,24 +64,36 @@ func fibonacciRPC(n int) (res int, err error) {
 	failOnError(err, "Failed to register a consumer")
 	corrId := randomString(32)
 
+        // Encode with protocol buffer
+	t := &pb.Task{
+        	Filename:  i,
+        	NewName:  o,
+        	Priority:  int32(p),
+	}
+	out, err := proto.Marshal(t)
+       	failOnError(err, "Failed to encode task:")
+	
+	// Publish task
 	err = ch.Publish(
 		"",          // exchange
-		"rpc_queue2", // routing key
+		"rpc_queue2",// routing key
 		false,       // mandatory
 		false,       // immediate
 		amqp.Publishing{
-			ContentType:   "text/plain",
+			ContentType:   "application/octet-stream",
 			CorrelationId: corrId,
 			ReplyTo:       q.Name,
-			Priority:      uint8(n),
-			Body:          []byte(strconv.Itoa(40+n/255)),
+			Priority:      uint8(p),
+			Body:          out,
 		})
 	failOnError(err, "Failed to publish a message")
 
 	for d := range msgs {
 		if corrId == d.CorrelationId {
-			res, err = strconv.Atoi(string(d.Body))
-			failOnError(err, "Failed to convert body to integer")
+			resp = &pb.Response{}
+			err := proto.Unmarshal(d.Body, resp)
+			log.Printf(resp.FileLocation)
+			failOnError(err, "Failed to convert body to string")
 			break
 		}
 	}
@@ -92,23 +104,31 @@ func fibonacciRPC(n int) (res int, err error) {
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	n := bodyFrom(os.Args)
+	input, output, priority := bodyFrom(os.Args)
 
-	log.Printf(" [x] Requesting fib(%d)", n)
-	res, err := fibonacciRPC(n)
+	log.Printf(" [x] Requesting image(%s)", input)
+	res, err := imageRPC(input, output, priority)
 	failOnError(err, "Failed to handle RPC request")
 
-	log.Printf(" [.] Got %d", res)
+	log.Printf(" [.] Image processed found in %s", res.FileLocation)
 }
 
-func bodyFrom(args []string) int {
-	var s string
-	if (len(args) < 2) || os.Args[1] == "" {
-		s = "30"
-	} else {
-		s = strings.Join(args[1:], " ")
-	}
-	n, err := strconv.Atoi(s)
-	failOnError(err, "Failed to convert arg to integer")
-	return n
+func bodyFrom(args []string) (string, string, int) {
+	//var i, o, s string
+	//var p int
+	//if len(os.Args) < 3 {
+	//	log.Print("Please supply an input and output filename e.g. go run rpc_client.go input.jpg output.jpg")	
+	//	p = 0
+	//} else if len(os.Args) == 3 {
+ 	//	p = 0
+	//} else {
+	//	i = os.Args[1]
+	//	o = os.Args[2]
+	//	s = os.Args[3]
+	//	p = 0
+	//}
+	i := "bvb.png"
+	o := "bvb.jpg"
+	p := 0  
+	return i, o, p
 }
