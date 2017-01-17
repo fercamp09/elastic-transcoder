@@ -48,3 +48,64 @@ To download files from github.com without downloading the whole project:
   curl -L -O https://raw.githubusercontent.com/rabbitmq/rabbitmq-tutorials/master/go/receive.go
 ```
 
+Alternatively, you can recreate the virtual machine by inputting the following commands:
+```bash
+  # Install Imagemagick:
+sudo apt-get update
+sudo apt-get install imagemagick
+
+# Install Thrift:
+sudo apt-get install automake bison flex g++ git libboost1.55-all-dev libevent-dev libssl-dev libtool make pkg-config
+# wget http://www.apache.org/dyn/closer.cgi?path=/thrift/0.10.0/thrift-0.10.0.tar.gz -o thrift.tar.gz
+wget http://www-us.apache.org/dist/thrift/0.10.0/thrift-0.10.0.tar.gz 
+tar -xvzf thrift-0.10.0.tar.gz
+cd thrift-0.10.0
+./configure && make
+sudo make install
+cd /etc/ld.so.conf.d/
+sudo ldconfig
+
+# Install RabbitMQ-server
+echo 'deb http://www.rabbitmq.com/debian/ testing main' |
+        sudo tee /etc/apt/sources.list.d/rabbitmq.list
+wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc |
+        sudo apt-key add -
+sudo apt-get update
+sudo apt-get install rabbitmq-server
+
+# Install go: https://golang.org/dl/
+wget https://storage.googleapis.com/golang/go1.7.4.linux-386.tar.gz
+tar -C /usr/local -xzf go1.7.4.linux-386.tar.gz
+export PATH=$PATH:/usr/local/go/bin
+cd /etc
+sudo vim environment
+# Add the following lines to /etc/environment
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin"
+GOPATH="/home/vagrant/goWorkspace"
+
+# Update RabbitMQ to latest version 3.6.6
+sudo apt-get update
+sudo apt-get upgrade rabbitmq-server -f
+
+# sudo apt-get install libmagickwand-dev
+
+# Install magick (https://github.com/quirkey/magick)
+go get github.com/quirkey/magick
+
+# Install gRPC:
+go get google.golang.org/grpc
+
+# Install protocol Buffers:
+sudo apt-get install unzip
+cd /usr/local
+sudo mkdir protoc && cd protoc
+sudo wget https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_32.zip -O protoc.zip
+sudo unzip protoc.zip
+sudo rm protoc.zip
+
+# Edit /etc/environment file and add "/usr/local/protoc/bin" to the PATH variable
+sudo chmod -R 755 /usr/local/protoc/
+
+go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+sudo cp ~/goWorkspace/bin/protoc-gen-go /usr/local/go/bin/
+```
