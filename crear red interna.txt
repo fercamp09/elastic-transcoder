@@ -1,0 +1,14 @@
+Clonar la vm con configuracion intnet.
+
+modificar el archivo con
+vim /etc/network/interfaces.d
+
+quitar la linea source
+
+añadir
+
+iface eth0 inet static
+address 192.168.0.101
+netmask 255.255.255.0
+
+

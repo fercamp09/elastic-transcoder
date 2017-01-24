@@ -127,8 +127,8 @@ func bodyFrom(args []string) (string, string, int) {
 	//	s = os.Args[3]
 	//	p = 0
 	//}
-	i := "bvb.png"
-	o := "bvb.jpg"
+	i := "temple.png"
+	o := "temple.jpg"
 	p := 0  
 	return i, o, p
 }
