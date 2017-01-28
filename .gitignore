@@ -1,2 +1,3 @@
 vm/.vagrant/**
 vm/*.box
+DFS/app/node_modules/*
