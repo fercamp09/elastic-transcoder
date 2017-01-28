@@ -26,12 +26,12 @@ mongoose.connect('mongodb://user:1991@ds127949.mlab.com:27949/sdistribuidos', fu
 });
 
 
+require('./models/File');
 
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 var uploaderRoutes = require('./routes/uploader');
-
 var app = express();
 
 
