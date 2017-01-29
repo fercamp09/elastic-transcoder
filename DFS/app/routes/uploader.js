@@ -51,8 +51,16 @@ router.get('/files/:id', function(req, res){
   File.findOne({_id:req.params.id}, function(err, doc){
 		if (err) {
 			return next(err);
-		} else if (doc) {
-		    res.redirect('/uploads/' + doc.new_name);
+		} else if (doc) { //validacion de la existencia metadata
+      var path = __dirname + '/../public/uploads/' + doc.new_name;
+      fs.access(path, function(err){ //validacion de la existencia de la data
+        if (err) {
+          res.json({message: 'this file does not exist'});
+        } else {
+          var readStream = fs.createReadStream(path);
+    		  readStream.pipe(res);
+        }
+      });
 		} else {
 		    res.json({message: 'this file does not exist'});
 		}

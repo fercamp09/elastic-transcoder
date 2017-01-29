@@ -6,8 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 
-
-
 var formidable = require('formidable');
 var mongoose = require('mongoose');
 var fs = require("fs");
@@ -28,12 +26,10 @@ mongoose.connect('mongodb://user:1991@ds127949.mlab.com:27949/sdistribuidos', fu
 
 require('./models/File');
 
-
 var index = require('./routes/index');
 var users = require('./routes/users');
 var uploaderRoutes = require('./routes/uploader');
 var app = express();
-
 
 //app.use(busboy());
 
@@ -49,20 +45,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//console.log(__dirname);
-
-
-
-
 app.use('/', index);
 app.use('/users', users);
 app.use('/', uploaderRoutes);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.use(function(req, res) {
+  res.status(404);
+  res.send({ error: '404 Not found' });
 });
 
 // error handler
@@ -75,5 +65,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 module.exports = app;
