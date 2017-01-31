@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"time"
+	"strconv"
 
 	"github.com/streadway/amqp"
 	"github.com/golang/protobuf/proto"	
@@ -104,31 +105,32 @@ func imageRPC(i string, o string, p int) (resp *pb.Response, err error) {
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	input, output, priority := bodyFrom(os.Args)
-
+	input, output, filetype, priority := bodyFrom(os.Args)
 	log.Printf(" [x] Requesting image(%s)", input)
 	res, err := imageRPC(input, output, priority)
 	failOnError(err, "Failed to handle RPC request")
 
-	log.Printf(" [.] Image processed found in %s", res.FileLocation)
+	log.Printf(" [.] Image processed found in %s, %s", res.FileLocation, filetype)
 }
 
-func bodyFrom(args []string) (string, string, int) {
-	//var i, o, s string
-	//var p int
-	//if len(os.Args) < 3 {
-	//	log.Print("Please supply an input and output filename e.g. go run rpc_client.go input.jpg output.jpg")	
-	//	p = 0
-	//} else if len(os.Args) == 3 {
- 	//	p = 0
-	//} else {
-	//	i = os.Args[1]
-	//	o = os.Args[2]
-	//	s = os.Args[3]
-	//	p = 0
-	//}
-	i := "temple.png"
-	o := "temple.jpg"
-	p := 0  
-	return i, o, p
-}
+func bodyFrom(args []string) (string, string, string, int) {
+	var i, o, s string
+	var p int
+	var err error
+
+	log.Print(len(os.Args))
+	if len(os.Args) < 4 {
+		log.Print("Please supply an input and output filename e.g. go run rpc_client.go input.jpg output.jpg jpg 1")	
+		os.Exit(3)
+		} else if len(os.Args) == 4 {
+ 		p = 0
+		log.Print("4")
+	} else {
+		i = os.Args[1]
+		o = os.Args[2]
+		s = os.Args[3]
+		p, err = strconv.Atoi(os.Args[4])
+	}
+	failOnError(err, "wrong arguments")  
+	return i, o, s, p
+}	
