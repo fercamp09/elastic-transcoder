@@ -36,3 +36,14 @@
 - 192.168.12.13  master
 - 192.168.12.14  slave1  
 - 192.168.12.15  slave2
+
+## Create cluster.
+Inside a slave node, input:
+If the rabbitmq-server is running, stop it using `sudo rabbitmqctl stop`. Start a rabbitmq detached node server by inputting: `sudo rabbitmq-server -detached`. The master node also has to be detached, so also do this to the master.
+
+Then form the cluster by stopping the node, joining master cluster and starting the node:
+```
+sudo rabbitmqctl stop_app
+sudo rabbitmqctl join_cluster vagrant@master
+rabbitmqctl start_app
+```
