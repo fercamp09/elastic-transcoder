@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 import pika
 import uuid
-import pb as tasks/task_pb2.py
+import tasks.task_pb2 as pb
+#1from tasks.task_pb2 import Response
 import sys
 
 
 class imageRpcClient(object):
     def __init__(self):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(
-                host='localhost'))
+                host='master'))
 
         self.channel = self.connection.channel()
 
@@ -32,7 +33,7 @@ class imageRpcClient(object):
                                    properties=pika.BasicProperties(
                                          reply_to = self.callback_queue,
                                          correlation_id = self.corr_id,
-                                         priority=prior,
+                                         priority=n.priority,
                                          ),
                                          body=n.SerializeToString()
                                    )
@@ -47,14 +48,14 @@ if len(sys.argv) < 4:
   sys.exit(-1)
 elif len(sys.argv) == 4:
     task.priority=0
-    task.filename = sys.argv(1)
-    task.new_name = sys.argv(2)
+    task.filename = sys.argv[1]
+    task.new_name = sys.argv[2]
 
 else:
 
-    task.filename = sys.argv(1)
-    task.new_name = sys.argv(2)
-    task.priority = sys.argv(4)
+    task.filename = sys.argv[1]
+    task.new_name = sys.argv[2]
+    task.priority = int(sys.argv[4])
 
     image_rpc = imageRpcClient()
     print(" [x] Requesting image")
@@ -62,5 +63,4 @@ else:
     res=pb.Response()
     res.ParseFromString(response)
     file_loc=res.file_location
-
     print(" [.] Image processed found in %s" % file_loc)
