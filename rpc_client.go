@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/streadway/amqp"
-	"github.com/golang/protobuf/proto"	
+	"github.com/golang/protobuf/proto"
 	pb "github.com/fercamp09/elastic-transcoder/tasks"
 )
 
@@ -73,7 +73,7 @@ func imageRPC(i string, o string, p int) (resp *pb.Response, err error) {
 	}
 	out, err := proto.Marshal(t)
        	failOnError(err, "Failed to encode task:")
-	
+
 	// Publish task
 	err = ch.Publish(
 		"",          // exchange
@@ -120,17 +120,20 @@ func bodyFrom(args []string) (string, string, string, int) {
 
 	log.Print(len(os.Args))
 	if len(os.Args) < 4 {
-		log.Print("Please supply an input and output filename e.g. go run rpc_client.go input.jpg output.jpg jpg 1")	
+		log.Print("Please supply an input and output filename e.g. go run rpc_client.go input.jpg output.jpg jpg 1")
 		os.Exit(3)
 		} else if len(os.Args) == 4 {
  		p = 0
-		log.Print("4")
+		i = os.Args[1]
+		o = os.Args[2]
+		s = os.Args[3]
+		log.Print("Added to Non-Priority Queue")
 	} else {
 		i = os.Args[1]
 		o = os.Args[2]
 		s = os.Args[3]
 		p, err = strconv.Atoi(os.Args[4])
 	}
-	failOnError(err, "wrong arguments")  
+	failOnError(err, "wrong arguments")
 	return i, o, s, p
-}	
+}
