@@ -12,8 +12,18 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "fer_campana/ubuntu32go"
+  # config.vm.box = "fer_campana/ubuntu32go"
+  # config.ssh.private_key_path = 'E:\.vagrant.d\insecure_private_key'
+  # config.ssh.insert_key = true
+  config.vm.define "master" do |master|
+    master.vm.box = "fer_campana/master"
+    master.vm.network "public_network", ip: "192.168.12.13"
+  end
 
+  config.vm.define "slave1" do |slave1|
+    slave1.vm.box = "fer_campana/slave1"
+    slave1.vm.network "public_network", ip: "192.168.12.14"
+  end
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
