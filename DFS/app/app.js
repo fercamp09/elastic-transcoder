@@ -14,7 +14,10 @@ var fs = require("fs");
 
 mongoose.Promise = global.Promise; //esta linea es porque salia un advertencia de monggose
 
+//mongoose.connect('mongodb://admin:admin@localhost:27017/admin', function(err, db){
 mongoose.connect('mongodb://user:1991@ds127949.mlab.com:27949/sdistribuidos', function(err, db){
+
+//mongoose.connect('mongodb://user:1991@ds127949.mlab.com:27949/sdistribuidos', function(err, db){
   if (err) {
     console.log(err);
     console.log("\nPLEASE RESTART THE SERVER OR CHECK CONNECTION\n");

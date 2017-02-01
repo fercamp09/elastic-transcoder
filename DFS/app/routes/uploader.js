@@ -29,9 +29,12 @@ router.post('/files', function(req, res){
     			return next(err);
     		} else {
           files_metadata.push(doc);
-          if (files.length == files_metadata.length) {
-            res.json(files_metadata);
-          }
+          //console.log('files ' + files.length);
+          //console.log('files_metadata ' + files_metadata.length);
+          //if (files.length == files_metadata.length) {
+            //res.json(files_metadata);
+            res.json(doc);
+          //}
     		}
     });
 
@@ -39,6 +42,7 @@ router.post('/files', function(req, res){
 
   form.on('file', function(field, file) {
       files.push({"field": field, "file": file});
+      //console.log('files xxxxxxxxxx ' + files.length);
   })
   form.on('end', function() {
     console.log(files.length + ' archivos agregados');
@@ -57,10 +61,28 @@ router.get('/files/:id', function(req, res){
         if (err) {
           res.json({message: 'this file does not exist'});
         } else {
+          res.writeHead(200, {
+            "Content-Type": "application/octet-stream",
+            "Content-Disposition" : "filename=" + doc.new_name
+          });
+
           var readStream = fs.createReadStream(path);
     		  readStream.pipe(res);
         }
       });
+		} else {
+		    res.json({message: 'this file does not exist'});
+		}
+	});
+});
+
+//Obtienes la metadata de un archivo
+router.get('/files/:id/metadata', function(req, res){
+  File.findOne({_id:req.params.id}, function(err, doc){
+		if (err) {
+			return next(err);
+		} else if (doc) { //validacion de la existencia metadata
+      res.json(doc);
 		} else {
 		    res.json({message: 'this file does not exist'});
 		}
