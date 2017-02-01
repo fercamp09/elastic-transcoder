@@ -3,4 +3,4 @@ vm/*.box
 DFS/app/node_modules/*
 DFS/app/public/uploads/*
 DFS/app/npm-debug.log
-/http-file-sender/files/*
+http-file-senders/files/*
