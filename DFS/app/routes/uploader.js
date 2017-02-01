@@ -9,7 +9,7 @@ module.exports = router;
 
 //Metodo que agrega uno o varios archivos a la base de datos
 //Archivos van en form-data tipo file en el body
-router.post('/files', function(req, res){
+router.post('/files', function(req, res, next){
   var files = [];
   var form = new formidable.IncomingForm();
   var files_metadata = [];
@@ -51,7 +51,7 @@ router.post('/files', function(req, res){
 });
 
 //Obtienes un archivo
-router.get('/files/:id', function(req, res){
+router.get('/files/:id', function(req, res, next){
   File.findOne({_id:req.params.id}, function(err, doc){
 		if (err) {
 			return next(err);
@@ -63,7 +63,7 @@ router.get('/files/:id', function(req, res){
         } else {
           res.writeHead(200, {
             "Content-Type": "application/octet-stream",
-            "Content-Disposition" : "filename=" + doc.new_name
+            "Content-Disposition" : "inline; filename=" + doc.new_name
           });
 
           var readStream = fs.createReadStream(path);
@@ -77,7 +77,7 @@ router.get('/files/:id', function(req, res){
 });
 
 //Obtienes la metadata de un archivo
-router.get('/files/:id/metadata', function(req, res){
+router.get('/files/:id/metadata', function(req, res, next){
   File.findOne({_id:req.params.id}, function(err, doc){
 		if (err) {
 			return next(err);
@@ -125,15 +125,27 @@ router.post('/files/depure', function(req, res){
 });
 
 //Elimina un archivo
-router.delete('/files/:id', function(req, res){
+router.delete('/files/:id', function(req, res, next){
   File.findOne({_id:req.params.id}, function(err, doc){
 		if(err){
-			res.send(err);
+			return next(err);
 		} else if (doc) {
-      fs.unlinkSync(__dirname + '/../public/uploads/'+ doc.new_name);
-      doc.remove();
-      console.log('\n' + doc.new_name + ' has been deleted');
-      res.json({message: 'this file has been deleted', file: doc});
+      var path = __dirname + '/../public/uploads/'+ doc.new_name;
+      fs.access(path, function(err){ //se valida si la ruta (archivo) existe
+        if (err) {
+          res.json({message: 'this file does not exist'});
+        } else { //Si el archivo existe, entra aqui
+          fs.unlink(path, function(err){
+              if (err) { //cualquier error al eliminar el archivo
+                  return next(err);
+              } else {
+                doc.remove();
+                console.log('\n' + doc.new_name + ' has been deleted');
+                res.json({message: 'this file has been deleted', file: doc});
+              }
+          });
+        }
+      });
     } else {
 		    res.json({message: 'this file does not exist'});
 		}
@@ -141,34 +153,57 @@ router.delete('/files/:id', function(req, res){
 });
 
 //actualiza el archivo, se tiene que enviar solamente 1 archivo.
-router.put('/files/:id', function(req, res){
+router.put('/files/:id', function(req, res, next){
+
   var form = new formidable.IncomingForm();
   form.parse(req);
+  form.on('fileBegin', function (name, file){
 
-  File.findOne({_id:req.params.id}, function(err, doc){
-		if(err){
-			res.send(err);
-		} else if (doc) {
-      console.log("aqui");
-      form.on('fileBegin', function (name, file){
-        console.log("aqui");
-        var new_name = Date.now() + '_' + file.name; //Nombre del archivo actualizado
-        var file_to_delete = doc.new_name; //Nombre del archivo antiguo
-        file.path = __dirname + '/../public/uploads/' + new_name;
-        doc.new_name = new_name;
+    var new_file_name = Date.now() + '_' + file.name; //Nombre del archivo entrante
+    file.path = __dirname + '/../public/uploads/' + new_file_name;
 
-        doc.save(function(err){
-        		if (err) {
-        			return next(err);
-        		} else {
-              fs.unlinkSync(__dirname + '/../public/uploads/'+ file_to_delete);
-              console.log(file_to_delete + ' changed to ' + new_name);
-              res.json({message: "You should send only one file", result: "File updated correctly"});
-        		}
+
+    File.findOne({_id:req.params.id}, function(err, doc){
+  		if (err) {
+        fs.unlink(file.path, function(err){
+            if (err) { //cualquier error al eliminar el archivo
+                return next(err);
+            } return next(err);
+          });
+  		} else if (doc) { //validacion de la existencia metadata
+        var path = __dirname + '/../public/uploads/' + doc.new_name; //path del archivo a eliminar
+        fs.access(path, function(err){ //validacion de la existencia de la data
+          if (err) {
+            res.json({message: 'this file does not exist'});
+          } else {
+            fs.unlink(path, function(err){
+                if (err) { //cualquier error al eliminar el archivo
+                    return next(err);
+                } else {
+                  console.log('se elimino el archivo viejo');
+                  doc.new_name = new_file_name;
+                  doc.changed = "true";
+                  doc.save(function(err){
+                    if (err) {
+                      return next(err);
+                    } else {
+                      res.json({message: "Se actualizo con exito"});
+                    }
+                  });
+                }
+            });
+          }
         });
-      });
-    } else {
-		    res.json({message: 'this file does not exist'});
-		}
+  		} else {
+        fs.unlink(file.path, function(err){
+            if (err) { //cualquier error al eliminar el archivo
+                return next(err);
+            }
+            res.json({message: 'this file does not exist'});
+        });
+  		}
+  	});
+
   });
+
 });

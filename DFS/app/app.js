@@ -55,7 +55,7 @@ app.use('/', uploaderRoutes);
 // catch 404 and forward to error handler
 app.use(function(req, res) {
   res.status(404);
-  res.send({ error: '404 Not found' });
+  res.send({ error: "404", message: "Resource/page not found" });
 });
 
 // error handler

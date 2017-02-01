@@ -3,7 +3,7 @@ import json
 import re
 
 url = "http://localhost:3000/files"
-idf = "589140ec6cc87d1ab55690d2" #el id del archivo, la metadata
+idf = "589181bae9ea063bda4741aa" #el id del archivo, la metadata
 
 http = requests.get(url +'/'+ idf)
 
