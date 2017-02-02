@@ -53,25 +53,25 @@ if len(sys.argv) < 4:
   print ("Please supply an input and output filename e.g. go run rpc_client.go input.jpg output.jpg jpg 1")
   sys.exit(-1)
 elif len(sys.argv) == 4:
-    files = {'file': open(sys.argv[1], 'rb')}
-    r = requests.post(url, files=files)
-    json_data = json.loads(r.text)
-    file_id = json_data["_id"]
+    #files = {'file': open(sys.argv[1], 'rb')}
+    #r = requests.post(url, files=files)
+    #json_data = json.loads(r.text)
+    #file_id = json_data["_id"]
 
     task.priority=0
     task.filename = sys.argv[1] #file_path
     task.new_name = sys.argv[2]
-    task.FileId = file_id
+    #task.FileId = sys.argv[3]
 else:
-    files = {'file': open(sys.argv[1], 'rb')}
-    r = requests.post(url, files=files)
-    json_data = json.loads(r.text)
-    file_id = json_data["_id"]
+    #files = {'file': open(sys.argv[1], 'rb')}
+    #r = requests.post(url, files=files)
+    #json_data = json.loads(r.text)
+    #file_id = json_data["_id"]
     
     task.filename = sys.argv[1]
     task.new_name = sys.argv[2]
     task.priority = int(sys.argv[4])
-    task.FileId = file_id
+    #task.FileId = file_id
 
 image_rpc = imageRpcClient()
 print(" [x] Requesting image")
