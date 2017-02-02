@@ -29,12 +29,7 @@ router.post('/files', function(req, res, next){
     			return next(err);
     		} else {
           files_metadata.push(doc);
-          //console.log('files ' + files.length);
-          //console.log('files_metadata ' + files_metadata.length);
-          //if (files.length == files_metadata.length) {
-            //res.json(files_metadata);
-            res.json(doc);
-          //}
+          res.json(doc);
     		}
     });
 

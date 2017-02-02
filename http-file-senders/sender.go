@@ -1,24 +1,84 @@
 package main
 
-import "fmt"
-import "net/http"
-import "io/ioutil"
-
-func main() {
-	url := "http://localhost:3000/files/5891488b6cc87d1ab55690d3"
-
-	file_path := "sender.py"
-
-	resp, err := http.Get(url)
-  check(err)
-  defer resp.Body.Close()
-  out, err := os.Create("files/test1.jpg")
-  if err != nil {
-    // panic?
-  }
-  defer out.Close()
-  io.Copy(out, resp.Body)
+import (
+    "bytes"
+    "fmt"
+    "io"
+    "mime/multipart"
+    "net/http"
+    "os"
+    "encoding/json"
+)
 
 
-	fmt.Println("Hello mundo")
+
+func Upload(url, file string, target interface{}) (err error) {
+    // Prepare a form that you will submit to that URL.
+    var b bytes.Buffer
+    w := multipart.NewWriter(&b)
+    // Add your image file
+    f, err := os.Open(file)
+    if err != nil {
+        return
+    }
+    defer f.Close()
+    fw, err := w.CreateFormFile("image", file)
+    if err != nil {
+        return
+    }
+    if _, err = io.Copy(fw, f); err != nil {
+        return
+    }
+    // Add the other fields
+    if fw, err = w.CreateFormField("key"); err != nil {
+        return
+    }
+    if _, err = fw.Write([]byte("KEY")); err != nil {
+        return
+    }
+    // Don't forget to close the multipart writer.
+    // If you don't close it, your request will be missing the terminating boundary.
+    w.Close()
+
+    // Now that you have a form, you can submit it to your handler.
+    req, err := http.NewRequest("POST", url, &b)
+    if err != nil {
+        return
+    }
+    // Don't forget to set the content type, this will contain the boundary.
+    req.Header.Set("Content-Type", w.FormDataContentType())
+
+    // Submit the request
+    client := &http.Client{}
+    res, err := client.Do(req)
+    if err != nil {
+        return
+    }
+    defer res.Body.Close()
+
+    //return json.NewDecoder(r.Body).Decode(target)
+
+    // Check the response
+    if res.StatusCode != http.StatusOK {
+        err = fmt.Errorf("bad status: %s", res.Status)
+    }
+    return json.NewDecoder(res.Body).Decode(target)
 }
+
+type Foo struct {
+    __v string
+    original_name string
+    new_name string
+    _id string
+    changed string
+}
+
+func main()  {
+  foo1 := new(Foo) // or &Foo{}
+  url := "http://localhost:3000/files"
+  file := "sender.py" //direccion del archivo a enviar
+  Upload(url, file, foo1)
+  println(foo1._id)
+}
+
+//Upload(url, file)
