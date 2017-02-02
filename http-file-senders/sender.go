@@ -7,12 +7,11 @@ import (
     "mime/multipart"
     "net/http"
     "os"
-    "encoding/json"
 )
 
 
 
-func Upload(url, file string, target interface{}) (err error) {
+func Upload(url, file string) (err error) {
     // Prepare a form that you will submit to that URL.
     var b bytes.Buffer
     w := multipart.NewWriter(&b)
@@ -41,7 +40,7 @@ func Upload(url, file string, target interface{}) (err error) {
     w.Close()
 
     // Now that you have a form, you can submit it to your handler.
-    req, err := http.NewRequest("POST", url, &b)
+    req, err := http.NewRequest("PUT", url, &b)
     if err != nil {
         return
     }
@@ -55,30 +54,17 @@ func Upload(url, file string, target interface{}) (err error) {
         return
     }
     defer res.Body.Close()
-
-    //return json.NewDecoder(r.Body).Decode(target)
-
     // Check the response
     if res.StatusCode != http.StatusOK {
         err = fmt.Errorf("bad status: %s", res.Status)
     }
-    return json.NewDecoder(res.Body).Decode(target)
-}
-
-type Foo struct {
-    __v string
-    original_name string
-    new_name string
-    _id string
-    changed string
+    return
 }
 
 func main()  {
-  foo1 := new(Foo) // or &Foo{}
-  url := "http://localhost:3000/files"
+  url := "http://localhost:3000/files/5892a10a00e0e7103dd9a7c0"
   file := "sender.py" //direccion del archivo a enviar
-  Upload(url, file, foo1)
-  println(foo1._id)
+  Upload(url, file)
 }
 
 //Upload(url, file)

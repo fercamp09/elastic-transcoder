@@ -44,7 +44,7 @@ func imageRPC(i string, o string, p int, server string) (resp *pb.Response, err 
 	conn, err := amqp.Dial(SERVER)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
-		
+
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
@@ -75,7 +75,7 @@ func imageRPC(i string, o string, p int, server string) (resp *pb.Response, err 
 	corrId := randomString(32)
 	//corrId = "1"
 	log.Printf("ID: ", corrId)
- 
+
         // Encode with protocol buffer
 	t := &pb.Task{
         	Filename:  i,
@@ -85,7 +85,7 @@ func imageRPC(i string, o string, p int, server string) (resp *pb.Response, err 
 	}
 	out, err := proto.Marshal(t)
        	failOnError(err, "Failed to encode task:")
-	
+
 	// Publish task
 	err = ch.Publish(
 		"",          // exchange
@@ -115,7 +115,7 @@ func imageRPC(i string, o string, p int, server string) (resp *pb.Response, err 
 }
 
 func cancelTask(id string, server string){
-	
+
 	conn, err := amqp.Dial(SERVER)
 	failOnError(err, "Failed to connect to RabbitMQ")
         defer conn.Close()
@@ -139,7 +139,7 @@ func cancelTask(id string, server string){
 
         //corrId := randomString(32)
 	corrId := id
-        
+
 	// Encode with protocol buffer
         t := &pb.Cancel{
 		FileId:  corrId,
@@ -168,14 +168,14 @@ func readTask(id string, server string){
 	conn, err := amqp.Dial(server)
         failOnError(err, "Failed to connect to RabbitMQ")
         defer conn.Close()
-	
+
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
 	args := make(amqp.Table)
         args["x-max-priority"] = int32(2)
-	
+
 	q, err := ch.QueueDeclare(
 		"rpc_queue2", // name
 		false,   // durable
@@ -208,7 +208,7 @@ func readTask(id string, server string){
 	}
 
 	log.Printf(" [*] Searching for message. To exit press CTRL+C")
-	
+
 }
 
 func main() {
@@ -228,7 +228,7 @@ func main() {
 	} else {
 		log.Printf("Wrong arguments, valid options: read, cancel, create")
 	}
-	
+
 }
 
 func bodyFrom(args []string) (string, string, string, int) {

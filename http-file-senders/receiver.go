@@ -7,7 +7,7 @@ import "os"
 
 func main() {
 	url := "http://localhost:3000/files/58926c92ba2dcd11b4d6c794" //se ingresa el id con el que se descargara el archivo
-	
+
 	//file_path := "sender.py"
 
 	resp, err := http.Get(url)
