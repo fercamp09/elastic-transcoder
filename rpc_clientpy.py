@@ -45,7 +45,7 @@ class imageRpcClient(object):
         return self.response
 
 
-url = "http://localhost:3000/files"
+url = "http://192.168.12.13:3000/files"
 #file_path = "sender.py" #la direccion del archivo a enviar
 
 task= pb.Task()
@@ -61,7 +61,7 @@ elif len(sys.argv) == 4:
     task.priority=0
     task.filename = sys.argv[1] #file_path
     task.new_name = sys.argv[2]
-    task.FileId = file_id
+    task.file_id = file_id
 else:
     files = {'file': open(sys.argv[1], 'rb')}
     r = requests.post(url, files=files)
@@ -71,7 +71,7 @@ else:
     task.filename = sys.argv[1]
     task.new_name = sys.argv[2]
     task.priority = int(sys.argv[4])
-    task.FileId = file_id
+    task.file_id = file_id
 
 image_rpc = imageRpcClient()
 print(" [x] Requesting image")
