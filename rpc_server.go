@@ -147,11 +147,16 @@ func main() {
 				failOnError(err, "Failed to parse cancel message")
 				if cancel.FileId == task.FileId {
 					task_cancelled = true
+					t.Ack(false)
+					break
+				}else{
+					t.Nack(false, true)
 					break
 				}
 			}
 
 			if task_cancelled {
+				d.Ack(false)
 				break
 			}
 
