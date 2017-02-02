@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 	"io/ioutil"
-	"fmt"
-	"net/http"
+	//"fmt"
+	//"net/http"
 	//"io"
 	//"os"
 	//"mime/multipart"
@@ -186,7 +186,7 @@ func main() {
 			image.Destroy()
 
 
-			Upload(url, task.NewName) //aqui se sube el archivo que se convirtió
+			//Upload(url, task.NewName) //aqui se sube el archivo que se convirtió
 
 			// Encode response
 			res := &pb.Response{
