@@ -14,7 +14,10 @@ var fs = require("fs");
 
 mongoose.Promise = global.Promise; //esta linea es porque salia un advertencia de monggose
 
-mongoose.connect('mongodb://user:1991@ds127949.mlab.com:27949/sdistribuidos', function(err, db){
+mongoose.connect('mongodb://admin:admin@localhost:27017/admin', function(err, db){
+//mongoose.connect('mongodb://user:1991@ds127949.mlab.com:27949/sdistribuidos', function(err, db){
+
+//mongoose.connect('mongodb://user:1991@ds127949.mlab.com:27949/sdistribuidos', function(err, db){
   if (err) {
     console.log(err);
     console.log("\nPLEASE RESTART THE SERVER OR CHECK CONNECTION\n");
@@ -52,7 +55,7 @@ app.use('/', uploaderRoutes);
 // catch 404 and forward to error handler
 app.use(function(req, res) {
   res.status(404);
-  res.send({ error: '404 Not found' });
+  res.send({ error: "404", message: "Resource/page not found" });
 });
 
 // error handler

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='task.proto',
   package='tasks',
   syntax='proto3',
-  serialized_pb=_b('\n\ntask.proto\x12\x05tasks\"o\n\x04Task\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08new_name\x18\x02 \x01(\t\x12\x0e\n\x06\x66ormat\x18\x03 \x01(\t\x12\x10\n\x08priority\x18\x04 \x01(\x05\"!\n\x0cPriorityType\x12\x07\n\x03LOW\x10\x00\x12\x08\n\x04HIGH\x10\x01\"!\n\x08Response\x12\x15\n\rfile_location\x18\x01 \x01(\tBB\n\x1a\x63om.github.fercamp09.tasksB\x0bTasksProtos\xaa\x02\x16\x46\x65rcamp09.Github.Tasksb\x06proto3')
+  serialized_pb=_b('\n\ntask.proto\x12\x05tasks\"\x80\x01\n\x04Task\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08new_name\x18\x02 \x01(\t\x12\x0e\n\x06\x66ormat\x18\x03 \x01(\t\x12\x10\n\x08priority\x18\x04 \x01(\x05\x12\x0f\n\x07\x66ile_id\x18\x05 \x01(\t\"!\n\x0cPriorityType\x12\x07\n\x03LOW\x10\x00\x12\x08\n\x04HIGH\x10\x01\"!\n\x08Response\x12\x15\n\rfile_location\x18\x01 \x01(\t\"\x19\n\x06\x43\x61ncel\x12\x0f\n\x07\x66ile_id\x18\x01 \x01(\tBB\n\x1a\x63om.github.fercamp09.tasksB\x0bTasksProtos\xaa\x02\x16\x46\x65rcamp09.Github.Tasksb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -42,8 +42,8 @@ _TASK_PRIORITYTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=99,
-  serialized_end=132,
+  serialized_start=117,
+  serialized_end=150,
 )
 _sym_db.RegisterEnumDescriptor(_TASK_PRIORITYTYPE)
 
@@ -83,6 +83,13 @@ _TASK = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='file_id', full_name='tasks.Task.file_id', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -96,8 +103,8 @@ _TASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=21,
-  serialized_end=132,
+  serialized_start=22,
+  serialized_end=150,
 )
 
 
@@ -127,13 +134,45 @@ _RESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=134,
-  serialized_end=167,
+  serialized_start=152,
+  serialized_end=185,
+)
+
+
+_CANCEL = _descriptor.Descriptor(
+  name='Cancel',
+  full_name='tasks.Cancel',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='file_id', full_name='tasks.Cancel.file_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=187,
+  serialized_end=212,
 )
 
 _TASK_PRIORITYTYPE.containing_type = _TASK
 DESCRIPTOR.message_types_by_name['Task'] = _TASK
 DESCRIPTOR.message_types_by_name['Response'] = _RESPONSE
+DESCRIPTOR.message_types_by_name['Cancel'] = _CANCEL
 
 Task = _reflection.GeneratedProtocolMessageType('Task', (_message.Message,), dict(
   DESCRIPTOR = _TASK,
@@ -148,6 +187,13 @@ Response = _reflection.GeneratedProtocolMessageType('Response', (_message.Messag
   # @@protoc_insertion_point(class_scope:tasks.Response)
   ))
 _sym_db.RegisterMessage(Response)
+
+Cancel = _reflection.GeneratedProtocolMessageType('Cancel', (_message.Message,), dict(
+  DESCRIPTOR = _CANCEL,
+  __module__ = 'task_pb2'
+  # @@protoc_insertion_point(class_scope:tasks.Cancel)
+  ))
+_sym_db.RegisterMessage(Cancel)
 
 
 DESCRIPTOR.has_options = True
