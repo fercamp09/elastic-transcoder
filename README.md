@@ -34,3 +34,7 @@ To Execute the server:
 ```bash
 ./server 
 ```
+
+In master branch, the files to process are previously located in all computers.
+
+In prueba_final branch, is the python client that automatically uploads the file to the node.js server and the go worker downloads and process it.
