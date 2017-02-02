@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"fmt"
 	"net/http"
-	"io"
-	"os"
-	"mime/multipart"
-	"bytes"
+	//"io"
+	//"os"
+	//"mime/multipart"
+	//"bytes"
 	"github.com/streadway/amqp"
 	"github.com/quirkey/magick"
 	"github.com/golang/protobuf/proto"
@@ -20,7 +20,7 @@ func failOnError(err error, msg string) {
 		log.Fatalf("%s: %s", msg, err)
 	}
 }
-
+/*
 func Upload(url, file string) (err error) {
     // Prepare a form that you will submit to that URL.
     var b bytes.Buffer
@@ -70,15 +70,15 @@ func Upload(url, file string) (err error) {
     }
     return
 }
-
+*/
 
 func main() {
-	var task_cancelled bool
+	//var task_cancelled bool
 	// Setting two priority levels
 	args := make(amqp.Table)
 	args["x-max-priority"] = int32(2)
 
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@192.168.12.13:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -95,7 +95,7 @@ func main() {
 		args,         // arguments
 	)
 
-	cq, err := ch.QueueDeclare(
+/*	cq, err := ch.QueueDeclare(
 		"cancel_queue",  //name
 		false,           //durable
 		false,           //delete when unused
@@ -105,7 +105,7 @@ func main() {
 
 	)
 	failOnError(err, "Failed to declare a queue")
-
+*/
 	err = ch.Qos(
 		1,     // prefetch count
 		0,     // prefetch size
@@ -123,7 +123,7 @@ func main() {
 		nil,    // args
 	)
 
-	cmsgs, err := ch.Consume(
+	/*cmsgs, err := ch.Consume(
 		cq.Name, // queue
 		"",      // consumer
 		false,   // auto-ack
@@ -133,7 +133,7 @@ func main() {
 		nil,     // args
 	)
 	failOnError(err, "Failed to register a consumer")
-
+*/
 	forever := make(chan bool)
 
 	go func() {
@@ -143,7 +143,7 @@ func main() {
 			err := proto.Unmarshal(d.Body, task)
 			failOnError(err, "Failed to parse task")
 
-
+/*
 			for t := range cmsgs {
 				cancel := &pb.Cancel{}
 				err := proto.Unmarshal(t.Body, cancel)
@@ -172,7 +172,7 @@ func main() {
 		    // panic?
 		  }
 		  defer out.Close()
-		  io.Copy(out, resp.Body)
+		  io.Copy(out, resp.Body)*/
 
 
 
