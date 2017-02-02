@@ -1,20 +1,36 @@
 # elastic-transcoder
 
-To run both, change working directory to:
+To install node.js:
  ```bash
-  
-cd ~/goWorkspace
-/src/github.com/fercamp09/elastic-transcoder/
+sudo-apt-get update
+sudo apt-get install build-essential libssl-dev
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+nvm install v6.9.5
 ```
-Execute this in one shell:
-```bash
-  
-go run rpc_server.go
+To execute the node.js server
+ ```bash
+cd DFS/app/
+npm install
+npm start
+```
+
+To run both:
+ ```bash
+cd ~/goWorkspace/src/github.com/fercamp09/elastic-transcoder/
+make
 
 ```
-Execute this in other shell:
+To execute the python client:
 ```bash
-  
-go run rpc_client.go
+python rpc_clientpy.py <input-file.png> <output-file.jpg> <conversion-file-type> <priority> 
+```
 
+To execute the go client:
+```bash
+./server [create|cancel] <input-file.png> <output-file.jpg> <conversion-file-type> <priority>
+```
+
+To Execute the server:
+```bash
+./server 
 ```
