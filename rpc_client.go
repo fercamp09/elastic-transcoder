@@ -13,6 +13,7 @@ import (
 	pb "github.com/fercamp09/elastic-transcoder/tasks"
 )
 
+const SERVER string = "amqp://guest:guest@192.168.12.13:5672/"
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -32,19 +33,18 @@ func randInt(min int, max int) int {
 	return min + rand.Intn(max-min)
 }
 
-func connectToRabbitMQ() (*amqp.Connection, error) {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+func connectToRabbitMQ(server string) (*amqp.Connection, error) {
+	conn, err := amqp.Dial(server)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 	return conn, err
 }
 
-func imageRPC(i string, o string, p int) (resp *pb.Response, err error) {
-	//conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	//failOnError(err, "Failed to connect to RabbitMQ")
-	//defer conn.Close()
-	conn, err := connectToRabbitMQ()
-	
+func imageRPC(i string, o string, p int, server string) (resp *pb.Response, err error) {
+	conn, err := amqp.Dial(SERVER)
+	failOnError(err, "Failed to connect to RabbitMQ")
+	defer conn.Close()
+		
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
@@ -73,32 +73,33 @@ func imageRPC(i string, o string, p int) (resp *pb.Response, err error) {
 	)
 	failOnError(err, "Failed to register a consumer")
 	corrId := randomString(32)
+	//corrId = "1"
 	log.Printf("ID: ", corrId)
  
         // Encode with protocol buffer
-	//t := &pb.Task{
-        //	Filename:  i,
-       // 	NewName:  o,
-       // 	Priority:  int32(p),
-	//	FileId: corrId,
-	//}
-	//out, err := proto.Marshal(t)
-       	//failOnError(err, "Failed to encode task:")
+	t := &pb.Task{
+        	Filename:  i,
+        	NewName:  o,
+        	Priority:  int32(p),
+		FileId: corrId,
+	}
+	out, err := proto.Marshal(t)
+       	failOnError(err, "Failed to encode task:")
 	
 	// Publish task
-	//err = ch.Publish(
-	//	"",          // exchange
-	//	"rpc_queue2",// routing key
-	//	false,       // mandatory
-	//	false,       // immediate
-	//	amqp.Publishing{
-	//		ContentType:   "application/octet-stream",
-	//		CorrelationId: corrId,
-	//		ReplyTo:       q.Name,
-	//		Priority:      uint8(p),
-	//		Body:          out,
-	//	})
-	//failOnError(err, "Failed to publish a message")
+	err = ch.Publish(
+		"",          // exchange
+		"rpc_queue2",// routing key
+		false,       // mandatory
+		false,       // immediate
+		amqp.Publishing{
+			ContentType:   "application/octet-stream",
+			CorrelationId: corrId,
+			ReplyTo:       q.Name,
+			Priority:      uint8(p),
+			Body:          out,
+		})
+	failOnError(err, "Failed to publish a message")
 
 	for d := range msgs {
 		if corrId == d.CorrelationId {
@@ -113,10 +114,13 @@ func imageRPC(i string, o string, p int) (resp *pb.Response, err error) {
 	return
 }
 
-func cancelTask(id string){
-	conn, err := connectToRabbitMQ()
+func cancelTask(id string, server string){
+	
+	conn, err := amqp.Dial(SERVER)
+	failOnError(err, "Failed to connect to RabbitMQ")
+        defer conn.Close()
 
-        ch, err := conn.Channel()
+	ch, err := conn.Channel()
         failOnError(err, "Failed to open a channel")
         defer ch.Close()
 
@@ -127,7 +131,7 @@ func cancelTask(id string){
                 "cancel_queue",    // name
                 false, // durable
                 false, // delete when usused
-                true,  // exclusive
+                false,  // exclusive
                 false, // noWait
                 args,   // arguments
         )
@@ -160,8 +164,10 @@ func cancelTask(id string){
         return
 }
 
-func readTask(id string){
-	conn, err := connectToRabbitMQ()
+func readTask(id string, server string){
+	conn, err := amqp.Dial(server)
+        failOnError(err, "Failed to connect to RabbitMQ")
+        defer conn.Close()
 	
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
@@ -210,15 +216,15 @@ func main() {
 	if strings.Compare(os.Args[1],"create") == 0 {
 		input, output, filetype, priority := bodyFrom(os.Args)
 		log.Printf(" [x] Requesting image(%s)", input)
-		res, err := imageRPC(input, output, priority)
+		res, err := imageRPC(input, output, priority, SERVER)
 		failOnError(err, "Failed to handle RPC request")
 		log.Printf(" [.] Image processed found in %s, %s", res.FileLocation, filetype)
 	} else if strings.Compare(os.Args[1], "read") == 0 {
 		id := os.Args[2]
-		readTask(id)
+		readTask(id, SERVER)
 	} else if os.Args[1] == "cancel" {
 		id := os.Args[2]
-		cancelTask(id)
+		cancelTask(id, SERVER)
 	} else {
 		log.Printf("Wrong arguments, valid options: read, cancel, create")
 	}
