@@ -14,7 +14,7 @@ npm install
 npm start
 ```
 
-To run both:
+To compile both:
  ```bash
 cd ~/goWorkspace/src/github.com/fercamp09/elastic-transcoder/
 make
@@ -27,7 +27,7 @@ python rpc_clientpy.py <input-file.png> <output-file.jpg> <conversion-file-type>
 
 To execute the go client:
 ```bash
-./server [create|cancel] <input-file.png> <output-file.jpg> <conversion-file-type> <priority>
+./client [create|cancel] <input-file.png> <output-file.jpg> <conversion-file-type> <priority>
 ```
 
 To Execute the server:
