@@ -177,7 +177,7 @@ func main() {
 
 
 			source, _ := ioutil.ReadFile(task.Filename)
-			image, err := magick.NewFromBlob(source, "jpg")
+			image, err := magick.NewFromBlob(source, task.Format)
 			failOnError(err, "Error reading from file")
 			response := task.NewName
 			err = image.ToFile(response)
