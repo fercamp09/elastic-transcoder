@@ -26,6 +26,7 @@ message Task {
   string new_name = 2; 
   string format = 3;
   int32 priority = 4;
+  string file_id = 5;
 
   enum PriorityType {
     LOW = 0;
@@ -35,5 +36,9 @@ message Task {
 
 message Response {
   string file_location = 1;
+}
+
+message Cancel {
+  string file_id = 1;
 }
 // [END messages]

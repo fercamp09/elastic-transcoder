@@ -17,6 +17,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	var task_cancelled bool
 	// Setting two priority levels
 	args := make(amqp.Table)
 	args["x-max-priority"] = int32(2)
@@ -32,10 +33,20 @@ func main() {
 	q, err := ch.QueueDeclare(
 		"rpc_queue2", // name
 		false,       // durable
-		false,       // delete when usused
+		false,       // delete when unused
 		false,       // exclusive
 		false,       // no-wait
 		args,         // arguments
+	)
+
+	cq, err := ch.QueueDeclare(
+		"cancel_queue",  //name
+		false,           //durable
+		false,           //delete when unused
+		false,           //exclusive
+		false,           //no-wait
+		args,            // arguments
+			
 	)
 	failOnError(err, "Failed to declare a queue")
 
@@ -55,17 +66,42 @@ func main() {
 		false,  // no-wait
 		nil,    // args
 	)
+
+	cmsgs, err := ch.Consume(
+		cq.Name, // queue
+		"",      // consumer
+		false,   // auto-ack
+		false,   // exclusive
+		false,   // no-local
+		false,   // no-wait
+		nil,     // args
+	)
 	failOnError(err, "Failed to register a consumer")
 
 	forever := make(chan bool)
 
 	go func() {
-		for d := range msgs {
+		for d := range msgs {	
 			// Decode task
 			task := &pb.Task{}
 			err := proto.Unmarshal(d.Body, task)
 			failOnError(err, "Failed to parse task")
 			
+			
+			for t := range cmsgs {
+				cancel := &pb.Cancel{}
+				err := proto.Unmarshal(t.Body, cancel)
+				failOnError(err, "Failed to parse cancel message")
+				if cancel.FileId == task.FileId {
+					task_cancelled = true
+					break
+				} 
+			}
+			
+			if task_cancelled {
+				break
+			}
+
 			// Process image
 			source, _ := ioutil.ReadFile(task.Filename)
 			image, err := magick.NewFromBlob(source, "jpg")
