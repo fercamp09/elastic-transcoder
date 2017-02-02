@@ -5,7 +5,10 @@ import (
 	"io/ioutil"
 	"fmt"
 	"net/http"
-
+	"io"
+	"os"
+	"mime/multipart"
+	"bytes"
 	"github.com/streadway/amqp"
 	"github.com/quirkey/magick"
 	"github.com/golang/protobuf/proto"
